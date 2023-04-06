@@ -46,6 +46,38 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
+        <Style TargetType="{x:Type ToggleButton}" x:Key="xdToggleButtonStyle">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Grid Background="{TemplateBinding Background}">
+                            <ContentPresenter />
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="ToggleButton.Background">
+                <Setter.Value>
+                    <ImageBrush ImageSource="Images/Xd/Button.png" Stretch="Fill" />
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="ToggleButton.IsMouseOver" Value="True">
+                    <Setter Property="Button.Background">
+                        <Setter.Value>
+                            <ImageBrush ImageSource="Images/Xd/ButtonHovered.png" Stretch="Fill" />
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+                <Trigger Property="ToggleButton.IsChecked" Value="True">
+                    <Setter Property="Button.Background">
+                        <Setter.Value>
+                            <ImageBrush ImageSource="Images/Xd/ButtonPressed.png" Stretch="Fill" />
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
         <Style TargetType="{x:Type Button}" x:Key="xdCloseButtonStyle">
             <Setter Property="Template">
                 <Setter.Value>
@@ -154,7 +186,10 @@
                     <Label x:Name="lblFuel" Foreground="LightGray" Content="FUEL" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                 </Button>
                 <Button x:Name="btnClose" Grid.Column="7" Grid.Row="1"  Width="35" Height="35" Style="{DynamicResource xdCloseButtonStyle}" IsTabStop="False" Cursor="Hand" Click="BtnClose_Click"/>
-                
+                <ToggleButton x:Name="btnSetKey" Grid.Column="7" Grid.Row="3"  Width="35" Height="35" Style="{DynamicResource xdToggleButtonStyle}" IsTabStop="False" Cursor="Hand" Click="BtnSetKey_Click">
+                    <TextBlock Foreground="LightGray" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center">SET<LineBreak/>KEY</TextBlock>
+                </ToggleButton>
+
                 <Button x:Name="btnLuggage" Grid.Column="1" Grid.Row="3"  Width="80" Height="35" Style="{DynamicResource xdButtonStyle}" IsTabStop="False" Cursor="Hand" Click="BtnLuggage_Click">
                     <Label x:Name="lblLuggage" Foreground="LightGray" Content="LUGGAGE" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                 </Button>
@@ -188,6 +223,10 @@
                     <TextBlock x:Name="lblParkingBrake" Foreground="LightGray" HorizontalAlignment="Center" VerticalAlignment="Center" Block.TextAlignment="Center">PARKING<LineBreak/>BRAKE</TextBlock>
                 </Button>
 
+                <StackPanel Orientation="Horizontal" Grid.Row="9" Grid.Column="1" Grid.ColumnSpan="3">
+                    <TextBlock FontSize="9" Foreground="LightGray" HorizontalAlignment="Left" VerticalAlignment="Center" Text="Hide/Show: " />
+                    <TextBlock x:Name="lblKeyText" FontSize="9" Foreground="LightGray" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                </StackPanel>
                 <Label x:Name="lblSimStatus" Grid.Column="0" Grid.Row = "9" Grid.ColumnSpan="9" Content="DISCONNECTED" FontSize="9" Foreground="LightGray" FontFamily="Arial" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Grid>
         </Viewbox>

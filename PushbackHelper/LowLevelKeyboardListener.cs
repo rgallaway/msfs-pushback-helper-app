@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Windows.Input;
 
 namespace PushbackHelper
@@ -24,6 +25,9 @@ namespace PushbackHelper
         [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         private static extern IntPtr GetModuleHandle(string lpModuleName);
 
+        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+        private static extern int ToUnicode(uint virtualKeyCode, uint scanCode, byte[] keyboardState, StringBuilder recvBuffer, int bufSize, uint flags);
+
         public delegate IntPtr LowLevelKeyboardProc(int nCode, IntPtr wParam, IntPtr lParam);
 
         public event EventHandler<KeyPressedArgs> OnKeyPressed;
@@ -44,6 +48,19 @@ namespace PushbackHelper
         public void UnHookKeyboard()
         {
             UnhookWindowsHookEx(_hookID);
+        }
+
+        public string KeyCodeToString(int wpfKeyCode)
+        {
+            var winKeyCode = KeyInterop.VirtualKeyFromKey((Key)wpfKeyCode);
+            StringBuilder retVal = new StringBuilder(256);
+            ToUnicode((uint)winKeyCode, 0, new byte[256], retVal, retVal.Capacity, 0);
+
+            if (retVal.Length == 0 || retVal[0] == '\u2408' || retVal[0] == '\u0008') // Backspace is a special case
+            {
+                return ((Key)wpfKeyCode).ToString();
+            }
+            return retVal.ToString();
         }
 
         private IntPtr SetHook(LowLevelKeyboardProc proc)

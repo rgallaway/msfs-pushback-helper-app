@@ -65,6 +65,9 @@ namespace PushbackHelper
                 listener = new LowLevelKeyboardListener();
                 listener.OnKeyPressed += Listener_OnKeyPressed;
                 listener.HookKeyboard();
+
+                var showHideKey = Properties.Settings.Default.ShowHideKey;
+                lblKeyText.Text = listener.KeyCodeToString(showHideKey);
             }
             catch
             {
@@ -183,16 +186,34 @@ namespace PushbackHelper
 
         private void Listener_OnKeyPressed(object sender, KeyPressedArgs e)
         {
-            if (e.KeyPressed == Key.PageUp && WindowState == WindowState.Normal)
+            var showHideKey = Properties.Settings.Default.ShowHideKey;
+
+            if (e.KeyPressed == (Key)showHideKey && WindowState == WindowState.Normal)
             {
                 WindowState = WindowState.Minimized;
                 base.OnStateChanged(e);
             }
-            else if (e.KeyPressed == Key.PageUp && WindowState == WindowState.Minimized)
+            else if (e.KeyPressed == (Key)showHideKey && WindowState == WindowState.Minimized)
             {
                 WindowState = WindowState.Normal;
                 base.OnStateChanged(e);
             }
+        }
+
+        private void Listener_ChangeShowHideKey(object sender, KeyPressedArgs e)
+        {
+            // Save the pressed key in the settings and reset to the normal listener
+            Properties.Settings.Default.ShowHideKey = (int)e.KeyPressed;
+            Properties.Settings.Default.Save();
+
+            var showHideKey = Properties.Settings.Default.ShowHideKey;
+            lblKeyText.Text = listener.KeyCodeToString(showHideKey);
+
+            listener.OnKeyPressed -= Listener_ChangeShowHideKey;
+            listener.OnKeyPressed += Listener_OnKeyPressed;
+
+            btnSetKey.IsChecked = false;
+            Keyboard.ClearFocus();
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -202,6 +223,13 @@ namespace PushbackHelper
         private void BtnClose_Click(object sender, RoutedEventArgs e)
         {
             ExitApp();
+        }
+
+        private void BtnSetKey_Click(object sender, RoutedEventArgs e)
+        {
+            // Change the button press listener
+            listener.OnKeyPressed -= Listener_OnKeyPressed;
+            listener.OnKeyPressed += Listener_ChangeShowHideKey;
         }
 
         private void TugManager_TugStatusEvent(TugManager.TugStatus Status)
